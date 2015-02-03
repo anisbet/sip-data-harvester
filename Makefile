@@ -30,11 +30,11 @@ USER=sirsi
 REMOTE=~/Unicorn/EPLwork/anisbet/
 LOCAL=~/projects/selfcheckdataharvester/
 APP=selfcheckdataharvester.py
-ARGS=-x
+ARGS=-i ./test.log
 test: ${APP}
-	python ${APP}
+	python ${APP} ${ARGS}
 	
 put: test
 	scp ${LOCAL}${APP} ${USER}@${PRODUCTION_SERVER}:${REMOTE}
-	ssh ${USER}@${PRODUCTION_SERVER} '${REMOTE}${APP} ${ARGS}'
+	ssh ${USER}@${PRODUCTION_SERVER} '${REMOTE}${APP} -x'
 
