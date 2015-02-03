@@ -4,7 +4,24 @@ Project Notes
 -------------
 
 Instructions for Running:
-./selfcheckdataharvester
+python selfcheckdataharvester.py [-x] [-i <file.data>]
+
+This script is a special request from Lachlan to process history log transactions
+on 3M self-check machine transactions. The goal is to profile which machines are
+doing what to ultimately determine if there are enough and if they are positioned 
+around branches correctly.
+
+The input is preprocessed Symphony history files that look like this:
+E201501020703491702R|S05IYFWSIPCHKMNA4|UO21221022794249|
+E201501020703551702R|S08CVFWSIPCHKMNA4|UO21221022794249|
+E201501020703551702R|S11CVFWSIPCHKMNA4|UO21221022794249|
+E201501020703561702R|S14CVFWSIPCHKMNA4|UO21221022794249|
+E201501020704071702R|S18IYFWSIPCHKMNA4|UO21221010698170|
+E201501020704131702R|S21CVFWSIPCHKMNA4|UO21221010698170|
+E201501020738261702R|S28IYFWSIPCHKMNA4|UO21221018267523|
+E201501020738331702R|S40CVFWSIPCHKMNA4|UO21221018267523|
+E201501020738331702R|S43CVFWSIPCHKMNA4|UO21221018267523|
+E201501020738471698R|S14IYFWSIPCHKMNA1|UO21221002219449|
 
 Product Description:
 Python script written by Andrew Nisbet for Edmonton Public Library, distributable by the enclosed license.

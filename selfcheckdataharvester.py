@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 ####################################################
 #
-# Python source for project selfcheckdataharvester 
-# Purpose:
-# Method:
+# Python source for project selfcheckdataharvester.
 #
-#<one line to give the program's name and a brief idea of what it does.>
-#    Copyright (C) 2013  Andrew Nisbet
+# Parses Symphony history logs into database-ready data.
+#    Copyright (C) 2015  Andrew Nisbet
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,8 +28,41 @@
 #
 ####################################################
 
+import sys
+import getopt
+import os
+
+def usage():
+    sys.stderr.write('Usage: selfcheckdataharvester.py [-x] -i file\n')
+    sys.stderr.write('  -i file input data file in format:\n')
+    sys.stderr.write('  -x[h] This help message.\n')
+    sys.exit()
+    
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    # import doctest
+    # doctest.testmod()
+    inputFile = ''
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hi:x", ["ifile="])
+    except getopt.GetoptError:
+        usage();
+    for opt, arg in opts:
+        if opt in ( "-i", "--ifile" ):
+            inputFile = arg
+        elif opt == '-h':
+            usage();
+    sys.stderr.write('running file ' + inputFile + '\n')
+    if os.path.isfile(inputFile) == False:
+        sys.stderr.write('**error: input file "' + inputFile + '" does not exist.\n')
+        sys.exit()
+    if os.path.getsize(inputFile) == 0:
+        sys.stderr.write('**error: input file "' + inputFile + '" is empty.\n')
+        sys.exit()
+    # Now down to business...
+    iFile = open(inputFile, 'r')
+    for line in iFile.readlines():
+        sys.stderr.write('>>>' + line)
+        # top_ten.parse_line(line[:-1])
+    iFile.close()
 
 # EOF

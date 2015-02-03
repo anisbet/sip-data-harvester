@@ -2,8 +2,8 @@
 # Makefile for project selfcheckdataharvester 
 # Created: Tue Feb 3 08:02:35 MST 2015
 #
-#<one line to give the program's name and a brief idea of what it does.>
-#    Copyright (C) 2013  Andrew Nisbet
+# Parses Symphony history logs into database-ready data.
+#    Copyright (C) 2015  Andrew Nisbet
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,18 +26,15 @@
 ####################################################
 # Change comment below for appropriate server.
 PRODUCTION_SERVER=eplapp.library.ualberta.ca
-TEST_SERVER=edpl-t.library.ualberta.ca
 USER=sirsi
 REMOTE=~/Unicorn/EPLwork/anisbet/
 LOCAL=~/projects/selfcheckdataharvester/
 APP=selfcheckdataharvester.py
 ARGS=-x
-
-put: test
-	scp ${LOCAL}${APP} ${USER}@${TEST_SERVER}:${REMOTE}
-	ssh ${USER}@${TEST_SERVER} '${REMOTE}${APP} ${ARGS}'
 test: ${APP}
 	python ${APP}
-production: test
+	
+put: test
 	scp ${LOCAL}${APP} ${USER}@${PRODUCTION_SERVER}:${REMOTE}
+	ssh ${USER}@${PRODUCTION_SERVER} '${REMOTE}${APP} ${ARGS}'
 
