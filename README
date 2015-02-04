@@ -48,4 +48,7 @@ Dependencies:
 None
 
 Known Issues:
-None
+The code was spec'ed and written in an afternoon, so it could use some clean up. 
+If you have a months worth of data the script can output the transactions by
+self-check machine name then chronologically, however the default is to output 
+all records in chronological order.
