@@ -30,7 +30,8 @@ USER=sirsi
 REMOTE=~/Unicorn/EPLwork/anisbet/
 LOCAL=~/projects/selfcheckdataharvester/
 APP=selfcheckdataharvester.py
-ARGS=-i ./test.log
+# ARGS=-i ./test.log
+ARGS=-i ./SIPCHK_sample.log
 test: ${APP}
 	python ${APP} ${ARGS}
 	

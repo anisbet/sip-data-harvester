@@ -132,27 +132,43 @@ class Transaction:
         >>> print t
         21221012345678|2015-01-02 07:38:40|0:00:05|0:00:05|1|1|1|
         """
-        ret_s = self.user + self.d + str(datetime.strptime(self.start_time, "%Y%m%d%H%M%S")) + self.d + str(self.get_transaction_duration()) + self.d + str(self.get_idle_duration()) + self.d + str(self.checkouts) + self.d + str(self.renewals) + self.d + str(self.checkins) + self.d
-        return ret_s
+        return self.user + self.d + str(datetime.strptime(self.start_time, "%Y%m%d%H%M%S")) + self.d + str(self.get_transaction_duration()) + self.d + str(self.get_idle_duration()) + self.d + str(self.checkouts) + self.d + str(self.renewals) + self.d + str(self.checkins) + self.d
 
 # Station is a model of the self-checkout machine. It contains 
 # transactions.
 class Station:
-    def __init__(self, name):
+    def __init__(self, name, library, delimiter='|'):
         self.name = name
-        self.transactions = {}
+        self.library = library
+        self.transactions = []
         self.previous_transaction = None
+        self.d = delimiter
     
+    # Sets the transaction at a given station.
+    # If the command is 'IY' it means it's time to terminate the old 
+    # transaction and start a new one.
     def _set_transaction_(self, user_id, timestamp, command):
-        pass
-            
+        # To get here we have to have seen other transactions, but if it is 'IY'
+        # we need to make a new transaction.
+        # 'IY'=New Transaction, 'CV'=Checkout, 'RV'=renew items, 'EV'=Checkin
+        if command == 'IY':
+            if self.previous_transaction is not None:
+                self.previous_transaction.end_transaction(timestamp)
+                print self.library + self.d + self.name + self.d + str(self.previous_transaction)
+            self.previous_transaction = Transaction(user_id, timestamp)
+        elif command == 'CV':
+            self.previous_transaction.set_checkouts(timestamp)
+        elif command == 'RV':
+            self.previous_transaction.set_renewals(timestamp)
+        elif command == 'EV':
+            self.previous_transaction.set_checkins(timestamp)
         
     # Method to output station contents.
     # param:  none
     # return: none
     def show(self):
-        pass
-        
+        for transaction in self.transactions:
+            print self.library + self.d + self.name + self.d + str(transaction)
         
 # The harvest class outputs aggregate results for transactions
 # on self-check machines. The input looks like:
@@ -180,8 +196,7 @@ class Station:
 # renewals         = count
 # station_id       = 'SIPCHKMNA1'
 class Harvester:
-    def __init__(self, debug=False):
-        self.DEBUG = debug
+    def __init__(self):
         self.lineno = 1
         self.stations = {}
     
@@ -248,12 +263,10 @@ class Harvester:
     # creates one in the Stations dictionary and then returns it.
     # param:  name - string of the station name.
     # return: the named station.
-    def _get_station_(self, name):
-        try:
-            return self.stations[name]
-        except KeyError:
-            self.stations[name] = Station(name)
-            return self.stations[name]
+    def _get_station_(self, name, library):
+        if self.stations.has_key(name) == False:
+            self.stations[name] = Station(name, library)
+        return self.stations[name]
             
     # This method parses a line that looks like:
     # 'E201501020703491702R|S05IYFWSIPCHKMNA4|UO21221022794249|'
@@ -282,15 +295,16 @@ class Harvester:
         # renewals
         # But for now let's see if there is a station by this name and add the data to it and if not 
         # create one.
-        station = self._get_station_(station_id)
+        station = self._get_station_(station_id, station_lib)
         station._set_transaction_(user_id, timestamp, command)
     
     # Outputs the Stations
     # param:  none
     # return: none
-    def to_string(self):
-        for station in self.stations:
-            station.show()
+    def show(self):
+        for station_name in self.stations.keys():
+            print self.stations[station_name].show()
+            
 # Displays help message and always exits.
 # param:  none
 # return: none
@@ -325,6 +339,7 @@ if __name__ == "__main__":
     harvester = Harvester()
     for line in iFile.readlines():
         harvester.parse_line(line[:-1])
+    # harvester.show()
     iFile.close()
 
 # EOF
